@@ -242,8 +242,18 @@ class PDFViewerActivity : AppCompatActivity() {
                                 imageView.height.toFloat()
                             )
 
+                            var statusBarHeight = 0
+
                             val windowInsets = imageView.rootWindowInsets
-                            val statusBarHeight = windowInsets?.getInsets(WindowInsets.Type.statusBars())?.top ?: 0
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                // Android 11 (API 30+) — use new WindowInsets API
+                                statusBarHeight = windowInsets?.getInsets(WindowInsets.Type.statusBars())?.top ?: 0
+                            } else {
+                                // Older Android versions — fallback using windowVisibleDisplayFrame
+                                val visibleFrame = Rect()
+                                imageView.getWindowVisibleDisplayFrame(visibleFrame)
+                                statusBarHeight = visibleFrame.top
+                            }
 
                             bounds.offset(location[0].toFloat(), location[1].toFloat() - statusBarHeight)
 
